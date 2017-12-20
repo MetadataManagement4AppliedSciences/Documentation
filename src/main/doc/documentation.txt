@@ -1,0 +1,301 @@
+Metadata Management for Applied Sciences (MASi)
+===============================================
+Contact <support@datamanager.kit.edu>
+:toc: left
+:toclevels: 3
+:iconsdir: ./icons
+:icons: font
+:max-width: 90em
+:author:    MASi Dev Team
+:email:     support@datamanager.kit.edu
+:revdate:   {datestamp}
+:revnumber: {version}
+:website: http://datamanager.kit.edu/index.php/kit-data-manager
+
+.Preliminary Remarks
+**********************************************************************
+If you are struggling with the terms
+
+- KIT Data Manager
+- Repository
+- Digital Object
+
+please read the documentation of the http://kitdatamanager.kit.edu/dama/manual/[KIT Data Manager] first.
+**********************************************************************
+
+== Introduction
+
+Nowadays, an ever increasing amount of data is to be seen or expected in science. 
+There is a great potential to gain new insights in various scientific fields by 
+using this data efficiently. The drawback is the also ever increasing complexity 
+and amount of the data and therefore the larger effort put on scientists in their 
+daily work. Methods for data processing, which could be used in the past efficiently, 
+might simply become impractical by failing to process large amounts of data in a 
+given time and new methods need to be adopted or developed.
+
+MASi is planned as a novel and generic metadata management for scientific data 
+that will be developed based on an application-oriented description via metadata. 
+The development process is accompanied by applied scientists from various and 
+heterogeneous domains. The metadata management not only supports the data handling, 
+but also allows an efficient use of provided scientific infrastructures. 
+MASi provides generic and distributed services for metadata-based data handling. 
+The management includes functionalities for data description, sustainable data storage, 
+improved information retrieval, preparation for further processing and usage of available data.
+
+== Description of the services
+=== MetaStore Service
+==== Features
+- Registration of XML Schema
+- Validation of XML with registered XML Schema
+- Storing metadata (METS format)
+- Updating metadata
+- Searching for metadata
+- Publish digital object (create a PID)
+
+==== REST-API
+The documentation of the RESTful services. ->
+link:docu[Documentation of the REST-API of the MetaStore]
+
+==== Structure
+The metadata is extracted from digital object during ingest. The metadata
+is stored in  http://www.loc.gov/standards/mets/[METS format] describing all 
+aspects of the digital object:
+
+- Base metadata
+- Content metadata
+- Structural metadata
+- Preserveration metadata including provenance
+
+Therefore all metadata has to be transformed to XML.
+
+===== Content Metadata
+The content metadata is specific to the data it has to describe. As a matter of
+this it differs from community to community.
+To allow validation the XML schema of the content metadata has to be registered
+at the metastore. If validation fails (independent of missing XML schema or
+invalid content) the MetaStore reject the metadata.
+
+==== Workflow
+1. Define content metadata of digital object
+i. If possible reuse existing XML schemata.
+2. Register new XML Schema (if not already registered)
+
+=== MetaStore & KIT Data Manager
+During ingest of digital objects the metadata is extracted from it and stored at
+MetaStore. If validation of metadata fails the ingest will be rejected!
+As the content metadata depends on the data/community there exists no automatic
+way to extract this.
+Therefor a http://datamanager.kit.edu/dama/manual/#ChapterStagingProcessorCoding[staging processor] 
+has to be implemented.
+In the MASi project some extractors are already implemented for some generic
+use cases.
+
+=== MASi Staging Processors
+
+NOTE: For most recent documentation please refer to the documentation located 
+inside the module projects.
+
+==== TikaExtractor 
+ClassName :: edu.kit.dama.mdm.content.mets.tikaextractor.TikaExtractorProcessor
+
+Extracts all metadata from each file using https://tika.apache.org/ [Apache TIKA] library.
+While the metadata depends on the file the linked schema allow any content
+inside the file elements.
+The extracted content metadata will be stored inside the METS file.
+
+===== Configuration
+If this is the only metadata extractor configure it as follows:
+
+====== Page 1:
+
+ACCESSIBLE BY :: All groups
+PRIORITY :: 5
+
+====== *General Options*
+
+Default :: ON
+Disabled :: OFF
+Ingest Supported :: ON
+Download Supported :: OFF
+
+====== Page 2:
+
+notifyPerEmailOnFail :: FALSE
+communityMetadataDmdId :: TIKA
+communityMDType :: OTHER
+communityMetadataSchemaId :: tika
+Plugin:bmd :: TRUE
+Plugin:oai_dc :: TRUE 
+
+
+==== XML Extractor 
+ClassName :: edu.kit.dama.mdm.content.mets.ExtractXmlMetadataFromFile
+
+Extract the content metadata from an XML file holding all metadata in XML format.
+The extracted content metadata will be stored inside the METS file.
+
+===== Configuration
+This extractor has to be defined for each XML Schema of each community.
+
+====== Page 1:
+
+ACCESSIBLE BY :: community
+PRIORITY :: 5
+
+====== *General Options*
+
+Default :: ON
+Disabled :: OFF
+Ingest Supported :: ON
+Download Supported :: OFF
+
+====== Page 2:
+
+notifyPerEmailOnFail :: FALSE
+fileName :: metadata.xml
+communityMetadataDmdId :: depends on community
+communityMDType :: OTHER
+communityMetadataSchemaId :: depends on community
+Plugin:bmd :: TRUE
+Plugin:oai_dc :: TRUE 
+
+==== CVMA Extractor 
+ClassName :: edu.kit.dama.mdm.content.mets.ExtractCvmaFromImage
+
+Extract the XMP metadata from images. This extractor is not generic as it
+depends on a special configuration of the exiftool and generates an XML file
+with an XML Schema especially generated for the Corpus Vitrearum Medii Aevi (CVMA).
+The extracted content metadata will be stored inside the METS file.
+
+===== Configuration
+This is the default metadata extractor for the CVMA community. It has to
+be configured as follows:
+
+====== Page 1:
+
+ACCESSIBLE BY :: CVMA
+PRIORITY :: 5
+
+====== *General Options*
+
+Default :: ON
+Disabled :: OFF
+Ingest Supported :: ON
+Download Supported :: OFF
+
+====== Page 2:
+
+notifyPerEmailOnFail :: FALSE
+fileName :: metadata.xml
+communityMetadataDmdId :: CVMA
+communityMDType :: OTHER
+communityMetadataSchemaId :: cvma
+Plugin:bmd :: TRUE
+Plugin:oai_dc :: TRUE 
+
+=== Staging Processors for KIT Data Manager
+There are also some helpful staging processors for automation of processes during
+data ingest.
+
+==== ImageResizer 
+ClassName :: edu.kit.masi.mdm.imagetransformer.ImageResizerProcessor
+
+This processor allows you to provide images in different sizes available via
+linked views. 
+There are 3 parameters responsible for the scaling of the images:
+
+* width
+* height
+* viewname
+
+All values are comma separated. Same index inside the list is linked to same
+file.
+
+The 4th parameter defines a list of possible extensions of files which should be scaled.
+
+*Example*: jpg, tif
+
+The 5th parameter defines the output format. Possible output formats are:
+
+* JPG
+* PNG
+* GIF
+
+===== Example
+----------------------------------------------
+  Scale all image files with the following extensions (jpg, png, gif, tif) and store
+  the scaled images in JPG format.
+  
+  Scaling with viewnames:
+  32,32,icon
+  150,-1, thumb # The value '-1' indicates that the height doesn't matter.
+  1024, 768, min
+
+=> 
+          width:  32,   150, 1024
+         height:  32,    -1,  768
+       viewname:  icon, thumb,  min
+File extensions:  jpg, png, gif, tif
+  Output format:  JPG
+
+Input:
+------
+  exampleImage.gif
+
+Output:
+-------
+  exampleImage_icon.JPG
+  exampleImage_thumb.JPG
+  exampleImage_min.JPG
+----------------------------------------------
+
+===== Configuration
+To configure it like the example above it has to look like this:
+
+====== Page 1:
+
+ACCESSIBLE BY :: All groups
+PRIORITY :: 5
+
+======= *General Options*
+
+Default :: ON
+Disabled :: OFF
+Ingest Supported :: ON
+Download Supported :: OFF
+
+====== Page 2:
+
+File extensions :: jpg, gif, png, tif, tiff
+Height :: 32, 150, 1024
+Width :: 32, -1, 768
+Viewname :: icon, thumb, min
+Output format :: JPG
+ 
+==== PID creator 
+ClassName :: edu.kit.masi.staging.pid.PidCreator
+
+This processor allows you to automatically register a PID for ingested data.
+The configuration of the service is done via 'datamanager.xml'
+
+===== Configuration
+To configure it like the example above it has to look like this:
+
+====== Page 1:
+
+ACCESSIBLE BY :: community 
+PRIORITY :: 0
+
+======= *General Options*
+
+Default :: ON
+Disabled :: OFF
+Ingest Supported :: ON
+Download Supported :: OFF
+
+====== Page 2:
+
+PID service :: EPIC
+
+
+include::installation.txt[]
