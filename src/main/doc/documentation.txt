@@ -83,6 +83,26 @@ This processor allows you to provide images in different sizes available via lin
 This processor allows you to automatically register a PID for ingested data. The configuration of the service is done via 'datamanager.xml'. The extractor is contained in the https://github.com/MetadataManagement4AppliedSciences/MetaStore[MetaStore] module.
 
 
+== Client Metadata Editor GUI
+
+This https://github.com/kit-data-manager/generic-repo-client[RepoClient] (KIT DM command line client) 
+plugin is a graphical user interface at the client. It enables users to manually enter metadata, 
+if automatic metadata extraction is impossible. For example, this is the case when the information 
+to be entered is only known by a human and not contained in the uploaded data. 
+The GUI is contained in the https://github.com/kit-data-manager/generic-repo-client[RepoClient] 
+sources under src/main/doc/code/DialogPlugin4Ingest.java. For further information see 
+"Extend Ingest Client using Plugins" in the RepoClient documentation.
+
+
+
+== Client Drag'n'Drop Functionality
+
+The https://github.com/kit-data-manager/generic-repo-client[RepoClient] (KIT DM command line client) 
+can be utilized in such a way that users can graphically ingest directories as digital objects 
+via drag'n'drop under Windows. The client is contained in the 
+https://github.com/kit-data-manager/generic-repo-client[RepoClient] itself. For further 
+information see "Drag’n Drop Client (Windows)" in the RepoClient documentation.
+
 
 == Installation
 
