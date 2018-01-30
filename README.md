@@ -1,6 +1,6 @@
 # Documentation
 
-The Documentation is a short introduction to MASi and the tools implemented.
+The Documentation is a short introduction to MASi, including the implemented methods and the service.
 
 ## How to build
 

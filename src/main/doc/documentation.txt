@@ -25,9 +25,9 @@ please read the documentation of the http://kitdatamanager.kit.edu/dama/manual/[
 
 == Introduction
 
-Nowadays, an ever increasing amount of data is to be expected and seen in science. There is a great potential to gain new insights in various scientific fields by using data efficiently. The side effect  is an ever increasing complexity and amount of the data and therefore the potential effort by scientists in their daily work increases as well. Data processing and management methods, which could efficiently be used in the past efficiently, might simply become impractical with such large amounts of data. Therefor, new methods need to be designed, developed and adopted.
+Nowadays, an ever increasing amount of data is to be expected and seen in science. There is a great potential to gain new insights in various scientific fields by using data efficiently. The side effect  is an ever increasing complexity and amount of data and therefore the potential effort by scientists in their daily work is increasing as well. Data processing and management methods, which could efficiently be used in the past might simply become impractical with such large amounts of data. Therefore, new methods need to be designed, developed and adopted.
 
-The MASi (Metadata Management for Applied Sciences) DFG project is, first, advancing research data management methods by delivering tools to extend KIT Data Manager (KIT DM) repository framework to support more sophisticated metadata handling. Second, MASi is building, operating and offering a repository service based on the KIT DM. It is a generic, flexible and metadata-driven service that enables the management of scientific data with descriptive metadata as the core pillar. The development process is accompanied by applied scientists from various and heterogeneous domains. Besides supporting data handling it also enables an efficient search within the data. Central aspects are a high performance with large-scale data, the automatic extraction and annotation of metadata and the focus of active in-use research data, in contrast to the archival.
+The MASi (Metadata Management for Applied Sciences) DFG project is, first, advancing research data management methods by delivering tools to extend the KIT Data Manager (KIT DM) repository framework to support more sophisticated metadata handling. Second, MASi is building, operating and offering a repository service based on the KIT DM. It is a generic, flexible and metadata-driven service that enables the management of scientific data with descriptive metadata as the core pillar. The development process is accompanied by applied scientists from various and heterogeneous domains. Part of supporting data handling is to enable an efficient search within the data. Further core aspects are a high performance with large-scale data, the automatic extraction and annotation of metadata and the focus of active in-use research data, in contrast to data archival.
 
 
 
@@ -44,8 +44,8 @@ The MetaStore service extends the core KIT DM by the following features
 - Storing metadata (METS format)
 - Updating metadata
 - Searching for metadata via the Generic Repository Client of the KIT DM or the MetaStore REST-API
-- Publish a digital object and creating a PID
-- Providing a REST-API for the MetaStore functionality that is fully integrated with the KIT DM REST-API link:docu[Documentation of the REST-API of the MetaStore]
+- Publish a digital object (create a PID)
+- Providing a REST-API for the MetaStore functionality that is fully integrated with the KIT DM REST-API (http://ipelsdf1.lsdf.kit.edu/masi/MetaStore/swagger/[MetaStore REST-API Documentation])
 
 The MetaStore Service is available via the https://github.com/MetadataManagement4AppliedSciences/MetaStore[MetaStore] module.
 
@@ -54,41 +54,36 @@ The MetaStore Service is available via the https://github.com/MetadataManagement
 === MASi Staging Processors
 
 
-==== Tika Extractor 
-Extracts all metadata from each file using https://tika.apache.org/[Apache Tika] library. While the metadata depends on the file the linked schema allow any content inside the file elements. The extracted content metadata will be stored inside the METS file. The extractor is contained in the https://github.com/MetadataManagement4AppliedSciences/MDM-MasiProcessors[MDM-MasiProcessors] module.
+==== PID Creator 
 
+This processor allows you to automatically register a PID for ingested data. The extractor is contained in the https://github.com/MetadataManagement4AppliedSciences/MetaStore[MetaStore] module.
+
+
+==== Tika Extractor 
+The Tika metadata extractor (staging processor) extracts all metadata from each file using the Apache Tike library. The extractor is contained in the https://github.com/MetadataManagement4AppliedSciences/MDM-MasiProcessors[MDM-MasiProcessors] module.
 
 
 ==== XML Extractor 
-Extracts the content metadata from an XML file that might hold all metadata in XML format. The extracted content metadata will be stored inside the METS file. The extractor is contained in the https://github.com/MetadataManagement4AppliedSciences/MDM-MasiProcessors[MDM-MasiProcessors] module.
-
-
-
-
-
-==== CVMA Extractor 
-
-The CVMA staging processor extracts XMP metadata from CVMA images. To extract the metadata an external exif-tool is used. This has to be configured accordingly to the CVMA-XMP specification. This extractor depends on a special configuration of the exiftool and generates an XML file with an XML Schema especially generated for the Corpus Vitrearum Medii Aevi (CVMA). The extractor is contained in the https://github.com/MetadataManagement4AppliedSciences/MDM-CVMA[MDM-CVMA] module.
+The XML metadata extrator extracts the content metadata from an XML file that might hold all metadata in XML format. The extractor is contained in the https://github.com/MetadataManagement4AppliedSciences/MDM-MasiProcessors[MDM-MasiProcessors] module.
 
 
 ==== Image Resizer 
 
-This processor allows you to provide images in different sizes available via linked views. The extractor is contained in the https://github.com/MetadataManagement4AppliedSciences/MDM-MasiProcessors[MDM-MasiProcessors] module.
+This staging processor allows to create images in different sizes (for example thumbnails) and provide them via views (see http://datamanager.kit.edu/dama/manual/index.html#ChapterDataOrganization[KIT DM Documentation on views]). The extractor is contained in the https://github.com/MetadataManagement4AppliedSciences/MDM-MasiProcessors[MDM-MasiProcessors] module.
 
 
+==== CVMA Extractor 
 
- 
-==== PID Creator 
+The CVMA staging processor extracts XMP metadata from CVMA images. The extractor is contained in the https://github.com/MetadataManagement4AppliedSciences/MDM-CVMA[MDM-CVMA] module.
 
-This processor allows you to automatically register a PID for ingested data. The configuration of the service is done via 'datamanager.xml'. The extractor is contained in the https://github.com/MetadataManagement4AppliedSciences/MetaStore[MetaStore] module.
 
 
 == Client Metadata Editor GUI
 
 This https://github.com/kit-data-manager/generic-repo-client[RepoClient] (KIT DM command line client) 
-plugin is a graphical user interface at the client. It enables users to manually enter metadata, 
+plugin is a graphical user interface on the client workstation. It enables users to manually enter metadata, 
 if automatic metadata extraction is impossible. For example, this is the case when the information 
-to be entered is only known by a human and not contained in the uploaded data. 
+to be entered as metadata is only known by a human and not contained in the uploaded data. 
 The GUI is contained in the https://github.com/kit-data-manager/generic-repo-client[RepoClient] 
 sources under src/main/doc/code/DialogPlugin4Ingest.java. For further information see 
 "Extend Ingest Client using Plugins" in the RepoClient documentation.
